@@ -1,4 +1,6 @@
+let carrinho = [];
 let modalQt = 1;
+let modalKey = 0;
 
 const qs = function (el) {                           // Nessa função não utilizei arrow function
     return document.querySelector(el);
@@ -20,6 +22,7 @@ pizzaJson.map((item, index) => {
         e.preventDefault();
         let key = e.target.closest('.pizza-item').getAttribute('data-key');
         modalQt = 1;
+        modalKey = key;
 
         qs('.pizzaBig img').src = pizzaJson[key].img;
         qs('.pizzaInfo h1').innerHTML = pizzaJson[key].name;
@@ -53,6 +56,47 @@ function closeModal() {
     }, 500);
 }
 
-qsl('.pizzaInfo--cancelButton, .pizzaInfo--cancelMobileButton').forEach((item)=>{
+qsl('.pizzaInfo--cancelButton, .pizzaInfo--cancelMobileButton').forEach((item) => {   //Fechar modal pedido
     item.addEventListener('click', closeModal);
+});
+
+qs('.pizzaInfo--qtmenos').addEventListener('click', () => {  //Adicionar mais itens
+    if (modalQt > 1) {
+        modalQt--;
+        qs('.pizzaInfo--qt').innerHTML = modalQt;
+    }
+});
+
+qs('.pizzaInfo--qtmais').addEventListener('click', () => {  //Remover mais itens
+    modalQt++;
+    qs('.pizzaInfo--qt').innerHTML = modalQt;
+});
+
+qsl('.pizzaInfo--size').forEach((size, sizeIndex) => {  //Selecionando e limpando as opções de tamanho
+    size.addEventListener('click', (e) => {
+        qs('.pizzaInfo--size.selected').classList.remove('selected');
+        size.classList.add('selected');
+    })
+});
+
+qs('.pizzaInfo--addButton').addEventListener('click', () => {  //Adicionando item ao carrinho    
+    let size = parseInt(qs('.pizzaInfo--size.selected').getAttribute('data-key'));
+
+    let identificador = pizzaJson[modalKey].id + '@' + size;    //Criado um identificados (pedidos)
+
+    let key = carrinho.findIndex((item) => {          //Através do identificador podemos juntar os itens,
+        return item.identificador == identificador     //dentro do pedido
+    });
+
+    if (key > -1) {
+        carrinho[key].qt += modalQt;
+    } else {
+        carrinho.push({
+            identificador,
+            id: pizzaJson[modalKey].id,
+            size,
+            qt: modalQt
+        });
+        closeModal();
+    }
 });
