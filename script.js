@@ -97,6 +97,18 @@ qs('.pizzaInfo--addButton').addEventListener('click', () => {  //Adicionando ite
             size,
             qt: modalQt
         });
+        atualizarCarrinho();
         closeModal();
     }
 });
+
+function atualizarCarrinho() {
+    if (carrinho.length > 0) {
+        qs('aside').classList.add('show');
+        for (let i in carrinho) {
+            let pizzaItem = pizzaJson.find((item) => item.id == carrinho[i].id);
+        }
+    } else {
+        qs('aside').classList.remove('show');
+    }
+}
